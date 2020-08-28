@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -51,6 +51,44 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
     const classes = useStyles();
+    const [isMale, setMale] = useState(false);
+    const [isFemale, setFemale] = useState(false);
+    const [isUndefined, setUndefined] = useState(false);
+    let gender = "";
+
+    const getGenderRequest = (name) => {
+        var xhr = new XMLHttpRequest()
+        xhr.open('GET', "https://api.genderize.io?name=" + name, false)
+        xhr.send();
+        if (xhr.status !== 200) {
+            alert( xhr.status + ': ' + xhr.statusText );
+          } else {
+            let data = xhr.response;
+            data = JSON.parse(data).gender;
+            gender = data;
+        }
+    }
+
+    const handleFindGenderByName = () => {
+        let name = document.getElementById("filled-basic").value;
+        getGenderRequest(name);
+        if(gender === "male"){
+            setMale(true);
+            setFemale(false);
+            setUndefined(false);
+        }
+        else if (gender === "female"){
+            setMale(false);
+            setFemale(true);
+            setUndefined(false);
+        }
+        else if (gender === null){
+            setMale(false);
+            setFemale(false);
+            setUndefined(true);
+        }
+    }
+
     return (
         <div className={classes.appBackground}>
             <AppBar position="fixed" className={classes.appBar}>
@@ -69,7 +107,7 @@ function App() {
                                 <TextField className={classes.formInput} id="filled-basic" label="Введи свое транслитерированое имя (Латиницей)" variant="filled"/>
                             </CardContent>
                             <CardActions>
-                                <Button variant="contained" color="primary">
+                                <Button variant="contained" color="primary" onClick={handleFindGenderByName}>
                                     Узнать пол
                                 </Button>
                             </CardActions>
@@ -77,21 +115,25 @@ function App() {
                     </Card>
                 </Container>
                 <div className={classes.drawerHeader}/>
-                <Container className={classes.root}>
-
-                    <Card className={classes.cardPage}>
-                        <CardContent>
-                            <CardHeader title="Мужчина"/>
-                        </CardContent>
-                    </Card>
-
-                    <Card className={classes.cardPage}>
-                        <CardContent>
-                            <CardHeader title="Женщина"/>
-                        </CardContent>
-                    </Card>
+                <Container className={classes.root} > 
+                    {isMale === true &&
+                        <Card className={classes.cardPage}>
+                            <CardContent>
+                                <CardHeader title="Мужчина"/>
+                            </CardContent>
+                         </Card>
+                    }
+                    {isFemale === true &&
+                        <Card className={classes.cardPage}>
+                            <CardContent>
+                                <CardHeader title="Женщина"/>
+                            </CardContent>
+                        </Card>
+                    }
+                    {isUndefined === true &&
+                        alert("Не удалось определить пол.")
+                    }
                 </Container>
-
             </main>
         </div>
     );
