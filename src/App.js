@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState} from 'react';                      //импорт "хуков" для доступа к контролю состояния
 import {makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -51,17 +51,18 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
     const classes = useStyles();
-    const [isMale, setMale] = useState(false);
+    const [isMale, setMale] = useState(false);              // объявление переменных состояния, контролирующие вывод карточек 
     const [isFemale, setFemale] = useState(false);
     const [isUndefined, setUndefined] = useState(false);
     let gender = "";
 
+    //функция c http-запросом для получения пола по имени
     const getGenderRequest = (name) => {
         var xhr = new XMLHttpRequest()
         xhr.open('GET', "https://api.genderize.io?name=" + name, false)
         xhr.send();
         if (xhr.status !== 200) {
-            alert( xhr.status + ': ' + xhr.statusText );
+            //alert( xhr.status + ': ' + xhr.statusText );
           } else {
             let data = xhr.response;
             data = JSON.parse(data).gender;
@@ -69,6 +70,7 @@ function App() {
         }
     }
 
+    //получение введенного имени и обновление переменных состояния в соответствии с полом
     const handleFindGenderByName = () => {
         let name = document.getElementById("filled-basic").value;
         getGenderRequest(name);
@@ -116,7 +118,7 @@ function App() {
                 </Container>
                 <div className={classes.drawerHeader}/>
                 <Container className={classes.root} > 
-                    {isMale === true &&
+                    {isMale === true &&                               //вывод компонентов в зависимости от значений переменных
                         <Card className={classes.cardPage}>
                             <CardContent>
                                 <CardHeader title="Мужчина"/>
